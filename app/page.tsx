@@ -1,11 +1,8 @@
 import {
-  IconArrowUpRight,
   IconCheck,
-  IconChevronRight,
   IconFlame,
   IconKeyboard,
   IconLock,
-  IconTargetArrow,
 } from "@tabler/icons-react"
 
 import { TypingTrainer } from "@/components/typing/typing-trainer"
@@ -22,6 +19,10 @@ const COURSE_STEPS = [
 export default function Page() {
   return (
     <div className="tm-app">
+      <a className="skip-link" href="#practice">
+        Skip to practice
+      </a>
+
       <header className="tm-header">
         <a className="tm-brand" href="#lesson" aria-label="TypeMaster home">
           <span className="tm-brand-mark" aria-hidden="true">
@@ -54,9 +55,11 @@ export default function Page() {
       <div className="tm-frame">
         <aside className="course-sidebar" aria-label="Foundations course">
           <div className="course-heading">
-            <span>Course 01</span>
+            <div className="course-heading-meta">
+              <span>Course 01</span>
+              <strong>3 / 12</strong>
+            </div>
             <h2>Foundations</h2>
-            <p>Build the muscle memory that makes speed feel effortless.</p>
           </div>
 
           <div className="course-progress">
@@ -64,36 +67,49 @@ export default function Page() {
               <span>Course progress</span>
               <strong>18%</strong>
             </div>
-            <div className="course-progress-track">
+            <div
+              className="course-progress-track"
+              role="progressbar"
+              aria-label="Course progress"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={18}
+            >
               <span />
             </div>
           </div>
 
-          <ol className="course-steps">
-            {COURSE_STEPS.map((step, index) => (
-              <li key={step.label} data-state={step.state}>
-                <span className="course-step-index">
-                  {step.state === "complete" ? (
-                    <IconCheck aria-hidden="true" />
-                  ) : step.state === "locked" ? (
-                    <IconLock aria-hidden="true" />
-                  ) : (
-                    String(index + 1).padStart(2, "0")
+          <nav aria-label="Lesson list">
+            <ol className="course-steps">
+              {COURSE_STEPS.map((step, index) => (
+                <li
+                  key={step.label}
+                  data-state={step.state}
+                  aria-current={step.state === "active" ? "step" : undefined}
+                >
+                  <span className="course-step-index">
+                    {step.state === "complete" ? (
+                      <IconCheck aria-hidden="true" />
+                    ) : step.state === "locked" ? (
+                      <IconLock aria-hidden="true" />
+                    ) : (
+                      String(index + 1).padStart(2, "0")
+                    )}
+                  </span>
+                  <span className="course-step-label">{step.label}</span>
+                  {step.state === "active" && (
+                    <span className="course-step-current">Now</span>
                   )}
-                </span>
-                <span>{step.label}</span>
-                {step.state === "active" && (
-                  <IconChevronRight aria-hidden="true" />
-                )}
-              </li>
-            ))}
-          </ol>
+                </li>
+              ))}
+            </ol>
+          </nav>
 
-          <div className="sidebar-tip">
+          <div className="sidebar-home-row">
             <IconKeyboard aria-hidden="true" />
             <div>
-              <strong>Keep looking up</strong>
-              <p>The keyboard will guide your fingers. Trust it.</p>
+              <span>Focus keys</span>
+              <strong>A S D F</strong>
             </div>
           </div>
         </aside>
@@ -102,70 +118,32 @@ export default function Page() {
           <div className="lesson-container">
             <div className="mobile-course-pill">
               <span>Foundations</span>
-              <strong>Lesson 1 of 12</strong>
+              <strong>Lesson 03 / 12</strong>
             </div>
 
-            <div className="lesson-breadcrumb" aria-label="Breadcrumb">
-              <span>Foundations</span>
-              <IconChevronRight aria-hidden="true" />
-              <strong>Lesson 01</strong>
-            </div>
-
-            <section className="lesson-hero">
+            <header className="lesson-workspace-header">
               <div className="lesson-intro">
-                <span className="lesson-eyebrow">Left hand practice</span>
-                <h1>Left hand, meet the home row.</h1>
+                <span className="lesson-eyebrow">
+                  Lesson 03 · Left hand practice
+                </span>
+                <h1>Left Home Row</h1>
                 <p>
-                  Plant your fingers on A, S, D, and F. Build a steady rhythm
-                  before you chase speed.
+                  Build a calm, even rhythm across A, S, D, and F. Keep your
+                  eyes on the prompt and let the keyboard guide your fingers.
                 </p>
+              </div>
 
-                <div className="lesson-meta">
-                  <span>
-                    <IconTargetArrow aria-hidden="true" />
-                    Accuracy first
-                  </span>
-                  <span>About 3 minutes</span>
+              <div className="lesson-objective" aria-label="Lesson goal">
+                <span className="lesson-objective-dot" aria-hidden="true" />
+                <div>
+                  <span>Today&apos;s goal</span>
+                  <strong>95%+ accuracy</strong>
+                  <small>About 3 minutes</small>
                 </div>
               </div>
-
-              <div className="mastery-card">
-                <span className="mastery-label">Mastery goal</span>
-                <strong>Under 60 sec</strong>
-                <p>Finish with zero mistakes to earn the gold key.</p>
-                <span className="mastery-orb" aria-hidden="true">
-                  <IconArrowUpRight />
-                </span>
-              </div>
-            </section>
+            </header>
 
             <TypingTrainer />
-
-            <section
-              className="lesson-footer-grid"
-              aria-label="Lesson guidance"
-            >
-              <article>
-                <span>01</span>
-                <div>
-                  <h2>Find the bumps</h2>
-                  <p>
-                    The small ridge on F tells your index finger where home is
-                    without looking down.
-                  </p>
-                </div>
-              </article>
-              <article>
-                <span>02</span>
-                <div>
-                  <h2>Stay feather-light</h2>
-                  <p>
-                    Relax your wrists and let each finger travel only as far as
-                    it needs to.
-                  </p>
-                </div>
-              </article>
-            </section>
           </div>
         </main>
       </div>
