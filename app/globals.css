@@ -852,6 +852,9 @@
   font-weight: 570;
   line-height: 1.8;
   letter-spacing: 0.035em;
+  white-space: pre-wrap;
+  white-space: break-spaces;
+  word-break: normal;
   text-wrap: pretty;
 }
 

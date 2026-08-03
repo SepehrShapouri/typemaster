@@ -398,7 +398,7 @@ export function TypingTrainer() {
                 data-state={state}
                 aria-hidden="true"
               >
-                {character === " " ? "\u00a0" : character}
+                {character}
               </span>
             )
           })}
