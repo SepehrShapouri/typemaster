@@ -1,7 +1,6 @@
 "use client"
 
 import {
-  IconCheck,
   IconClock,
   IconPalette,
   IconPlayerPlay,
@@ -282,7 +281,7 @@ export function TypingTrainer() {
         <div className="trainer-kicker">
           <span className="trainer-status-dot" data-status={status} />
           <div>
-            <span>Lesson drill</span>
+            <span>Live practice</span>
             <strong id="practice-title">
               {status === "idle"
                 ? "Ready"
@@ -292,6 +291,34 @@ export function TypingTrainer() {
             </strong>
           </div>
         </div>
+
+        <dl className="trainer-stats" id="progress">
+          <div>
+            <dt>
+              <IconClock aria-hidden="true" />
+              Time
+            </dt>
+            <dd>{formatTime(elapsedMs)}</dd>
+          </div>
+          <div>
+            <dt>Speed</dt>
+            <dd>
+              {wordsPerMinute}
+              <span>wpm</span>
+            </dd>
+          </div>
+          <div>
+            <dt>Accuracy</dt>
+            <dd>
+              {accuracy}
+              <span>%</span>
+            </dd>
+          </div>
+          <div>
+            <dt>Errors</dt>
+            <dd>{mistakes}</dd>
+          </div>
+        </dl>
 
         <div className="trainer-controls" aria-label="Keyboard controls">
           <button
@@ -303,7 +330,11 @@ export function TypingTrainer() {
               soundEnabled ? "Turn key sounds off" : "Turn key sounds on"
             }
           >
-            {soundEnabled ? <IconVolume /> : <IconVolumeOff />}
+            {soundEnabled ? (
+              <IconVolume aria-hidden="true" />
+            ) : (
+              <IconVolumeOff aria-hidden="true" />
+            )}
             <span>{soundEnabled ? "Sound on" : "Sound off"}</span>
           </button>
           <button
@@ -312,7 +343,7 @@ export function TypingTrainer() {
             onClick={cycleKeyboardTheme}
             aria-label={`Change keyboard theme. Current theme: ${THEME_LABELS[keyboardTheme]}`}
           >
-            <IconPalette />
+            <IconPalette aria-hidden="true" />
             <span>{THEME_LABELS[keyboardTheme]}</span>
           </button>
           {status !== "idle" && (
@@ -322,56 +353,36 @@ export function TypingTrainer() {
               onClick={beginExercise}
               aria-label="Restart exercise"
             >
-              <IconRefresh />
+              <IconRefresh aria-hidden="true" />
               <span>Restart</span>
             </button>
           )}
         </div>
       </div>
 
-      <dl className="trainer-stats" id="progress">
-        <div>
-          <dt>
-            <IconClock />
-            Time
-          </dt>
-          <dd>{formatTime(elapsedMs)}</dd>
-        </div>
-        <div>
-          <dt>Speed</dt>
-          <dd>
-            {wordsPerMinute}
-            <span>wpm</span>
-          </dd>
-        </div>
-        <div>
-          <dt>Accuracy</dt>
-          <dd>
-            {accuracy}
-            <span>%</span>
-          </dd>
-        </div>
-        <div>
-          <dt>Errors</dt>
-          <dd>{mistakes}</dd>
-        </div>
-      </dl>
-
       <div
         ref={practiceRegionRef}
         className="exercise-region"
         data-feedback={feedback}
         data-status={status}
+        aria-label="Typing exercise prompt"
         tabIndex={-1}
       >
-        <div className="exercise-progress-track" aria-hidden="true">
+        <div
+          className="exercise-progress-track"
+          role="progressbar"
+          aria-label="Exercise progress"
+          aria-valuemin={0}
+          aria-valuemax={LESSON_TEXT.length}
+          aria-valuenow={typedIndex}
+        >
           <span style={{ width: `${progress}%` }} />
         </div>
 
         <div className="exercise-heading-row">
           <div>
             <span className="exercise-overline">Exercise 01</span>
-            <h2>Home row rhythm</h2>
+            <h2>Home Row Rhythm</h2>
           </div>
           <span className="exercise-count">
             {typedIndex}/{LESSON_TEXT.length}
@@ -405,14 +416,19 @@ export function TypingTrainer() {
         </div>
 
         <div className="exercise-feedback-row">
-          <p className="exercise-feedback" aria-live="polite">
+          <p
+            className="exercise-feedback"
+            aria-live={
+              feedback === "error" || status === "complete" ? "polite" : "off"
+            }
+          >
             <span className="feedback-icon" aria-hidden="true">
               {status === "complete" ? (
-                <IconTrophy />
+                <IconTrophy aria-hidden="true" />
               ) : feedback === "error" ? (
                 "!"
               ) : (
-                <IconTargetArrow />
+                <IconTargetArrow aria-hidden="true" />
               )}
             </span>
             {liveMessage}
@@ -425,8 +441,8 @@ export function TypingTrainer() {
               onClick={beginExercise}
               data-testid="start-exercise"
             >
-              <IconPlayerPlay />
-              Start exercise
+              <IconPlayerPlay aria-hidden="true" />
+              Start Exercise
             </button>
           )}
 
@@ -436,8 +452,8 @@ export function TypingTrainer() {
               className="primary-action"
               onClick={beginExercise}
             >
-              <IconRefresh />
-              Repeat drill
+              <IconRefresh aria-hidden="true" />
+              Repeat Drill
             </button>
           )}
         </div>
@@ -458,23 +474,6 @@ export function TypingTrainer() {
               ? "SPACE"
               : currentCharacter.toUpperCase() || "✓"}
           </kbd>
-        </div>
-
-        <div className="finger-guide" aria-label="Left hand finger guide">
-          {FINGER_GUIDE.map((item) => (
-            <div
-              key={item.code}
-              className="finger-chip"
-              data-active={currentCode === item.code && status !== "complete"}
-            >
-              <span>
-                {item.character === " "
-                  ? "Space"
-                  : item.character.toUpperCase()}
-              </span>
-              <small>{item.finger}</small>
-            </div>
-          ))}
         </div>
 
         <div className="mobile-key-row" aria-label="Touch typing controls">
@@ -511,11 +510,6 @@ export function TypingTrainer() {
             />
           </div>
         </div>
-
-        <p className="keyboard-footnote">
-          <IconCheck aria-hidden="true" />
-          Use the keyboard on your desk or tap the keys above.
-        </p>
       </div>
     </section>
   )

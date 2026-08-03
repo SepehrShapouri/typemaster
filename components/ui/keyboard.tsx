@@ -30,6 +30,7 @@ import {
   useEffect,
   useRef,
   useState,
+  type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
   type RefObject,
@@ -712,6 +713,9 @@ function Key({
   const isTarget = Boolean(keyCode && targetKey === keyCode);
   const keyVariantSlot = resolveKeyVariant(themeName, keyCode);
   const keyVariant = KEYBOARD_THEMES[themeName].variants[keyVariantSlot];
+  const keyLabel = keyCode?.startsWith("Key")
+    ? keyCode.slice(3)
+    : keyCode ?? "Keyboard key";
 
   const handlePointerDown = (event: ReactPointerEvent<HTMLButtonElement>) => {
     if (!keyCode || event.button !== 0 || isPressed) {
@@ -735,13 +739,24 @@ function Key({
     releaseKey(keyCode, "pointer");
   };
 
+  const handleClick = (event: ReactMouseEvent<HTMLButtonElement>) => {
+    triggerPointerHaptic();
+
+    if (!keyCode || event.detail !== 0) {
+      return;
+    }
+
+    pressKey(keyCode, "pointer");
+    releaseKey(keyCode, "pointer");
+  };
+
   return (
     <button
       type="button"
-      onClick={triggerPointerHaptic}
-      aria-label={keyCode}
+      onClick={handleClick}
+      aria-label={`${keyLabel}${isTarget ? ", next key" : ""}`}
       aria-pressed={isPressed}
-      aria-current={isTarget ? "true" : undefined}
+      tabIndex={-1}
       data-key-code={keyCode}
       data-pressed={isPressed || undefined}
       data-target={isTarget || undefined}
@@ -751,11 +766,11 @@ function Key({
       onPointerLeave={handlePointerRelease}
       onLostPointerCapture={handlePointerRelease}
       style={{ height: 50, width }}
-      className="flex items-end cursor-pointer touch-none appearance-none border-0 bg-transparent p-0 text-left focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#dff56d]"
+      className="flex items-end cursor-pointer touch-manipulation appearance-none border-0 bg-transparent p-0 text-left transition-opacity duration-100 hover:opacity-95 focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#dff56d]"
     >
       <div
         className={cn(
-          "relative overflow-hidden h-[50px] rounded-[4px] rounded-t-[12px] border border-black/40 flex items-start justify-center transition-all duration-100",
+          "relative overflow-hidden h-[50px] rounded-[4px] rounded-t-[12px] border border-black/40 flex items-start justify-center transition-[height,transform,box-shadow] duration-100",
           isPressed && "h-[45px]",
           isTarget && !isPressed && "animate-[target-key-pulse_1.5s_ease-in-out_infinite]",
         )}
@@ -769,7 +784,7 @@ function Key({
       >
         <div
           className={cn(
-            "relative z-10 h-[37px] rounded-[6px] border border-t-0 border-black/40 transition-all duration-100",
+            "relative z-10 h-[37px] rounded-[6px] border border-t-0 border-black/40 transition-[background-color,color] duration-100",
             "text-[9px] font-medium flex flex-col items-center justify-between p-1 gap-0.5 select-none",
             className,
           )}
@@ -784,13 +799,13 @@ function Key({
 
         <div
           className={cn(
-            "absolute z-0 bottom-0 right-0 h-px w-8 rotate-70 translate-x-3.5 bg-black/30 transition-all duration-100",
+            "absolute z-0 bottom-0 right-0 h-px w-8 rotate-70 translate-x-3.5 bg-black/30 transition-transform duration-100",
             isPressed && "rotate-60",
           )}
         />
         <div
           className={cn(
-            "absolute z-0 bottom-0 left-0 h-px w-8 -rotate-70 -translate-x-3.5 bg-black/30 transition-all duration-100",
+            "absolute z-0 bottom-0 left-0 h-px w-8 -rotate-70 -translate-x-3.5 bg-black/30 transition-transform duration-100",
             isPressed && "-rotate-60",
           )}
         />
@@ -808,7 +823,8 @@ function isEditableTarget(target: EventTarget | null) {
     target.isContentEditable ||
     target.tagName === "INPUT" ||
     target.tagName === "TEXTAREA" ||
-    target.tagName === "SELECT"
+    target.tagName === "SELECT" ||
+    target.closest("button, a, [role='button'], [role='link']") !== null
   );
 }
 
