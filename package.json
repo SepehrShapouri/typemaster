@@ -4,12 +4,12 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "dev:sites": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext dev",
-    "build:sites": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build",
-    "start:sites": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext start",
-    "start": "next start",
+    "dev": "node init && next dev",
+    "build": "node init && next build",
+    "dev:sites": "node init && WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext dev",
+    "build:sites": "node init && WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build",
+    "start:sites": "node init && WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext start",
+    "start": "node init && next start",
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit"
